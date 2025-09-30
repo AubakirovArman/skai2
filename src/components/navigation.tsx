@@ -2,113 +2,101 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
+import { cn } from '@/lib/utils'
 
-const navigationItems = [
-  {
-    name: 'Главная',
-    href: '/',
-  },
-  {
-    name: 'Виртуальный член СД',
-    href: '/virtual-director',
-  },
-  {
-    name: 'ВНД Фонда',
-    href: '/vnd',
-  },
-  {
-    name: 'НПА Фонда',
-    href: '/np',
-  },
+const items = [
+  { name: 'Главная', href: '/' },
+  { name: 'Виртуальный член СД', href: '/virtual-director' },
+  { name: 'ВНД Фонда', href: '/vnd' },
+  { name: 'НПА Фонда', href: '/np' },
 ]
 
 export function Navigation() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const isActive = (href: string) => pathname === href
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-gray-200 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo section */}
-          <div className="flex items-center">
-            <Image 
-              src="/image.png" 
-              alt="SKAI Logo" 
-              width={120} 
-              height={40} 
-              className="h-8 w-auto"
-            />
-          </div>
+    // без fixed/bg/border — позиционирование делает layout
+    <nav className="w-full">
+      <div className="mx-auto flex h-10 w-full max-w-[min(1200px,92vw)] items-center justify-between px-0">
+        {/* ЛОГО слева */}
+        <div className="flex items-center">
+          <Image
+            src="/image.png"
+            alt="SKAI Logo"
+            width={124}
+            height={32}
+            className="object-contain"
+            priority
+          />
+        </div>
 
-          {/* Navigation items */}
-          <div className="flex items-center space-x-8">
-            {navigationItems.map((item) => {
-              const isActive = pathname === item.href
+        <div className="flex items-center align-center space-x-8">
+          <nav className="flex items-center gap-8">
+            {items.map((it) => {
+              const active = pathname === it.href
               return (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={it.href}
+                  href={it.href}
                   className={cn(
-                    'relative px-3 py-2 text-sm font-medium transition-colors duration-200',
-                    isActive
-                      ? 'text-[#CEAD6E]'
-                      : 'text-gray-600 hover:text-gray-900'
+                    "relative text-sm transition-colors",
+                    active ? "text-black font-semibold" : "text-gray-500 hover:text-gray-800"
                   )}
                 >
-                  <span className="relative z-10">{item.name}</span>
-                  {isActive && (
-                    <>
-                      <motion.div
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CEAD6E]"
-                        layoutId="activeNavItem"
-                        initial={false}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 500,
-                          damping: 30,
-                        }}
-                      />
-                      <div className="absolute top-1/2 -right-3 transform -translate-y-1/2 w-2 h-2 bg-[#CEAD6E] rounded-full" />
-                    </>
+                  {it.name}
+                  {/* точка вплотную к активному пункту */}
+                  {active && (
+                    <span className="ml-2 inline-block h-1.5 w-1.5 align-middle rounded-full bg-black" />
                   )}
                 </Link>
               )
             })}
-          </div>
+          </nav>
+        </div>
 
-          {/* User section */}
-          <div className="flex items-center space-x-4">
-            {session ? (
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
-                </div>
-                <button
-                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
-                >
-                  Выйти
-                </button>
-              </div>
-            ) : (
+        {/* ПРАВЫЙ БЛОК — ЛОГИКА КАК БЫЛА (аватар/Войти/Выйти) */}
+        <div className="flex items-center space-x-3">
+          {session ? (
+            <>
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                  <Image 
-                    src="/image.png" 
-                    alt="User Avatar" 
-                    width={24} 
-                    height={24} 
-                    className="w-6 h-6 rounded-full"
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
+                  <Image
+                    src={(session.user as any)?.image || '/image.png'}
+                    alt={(session.user as any)?.name || 'User Avatar'}
+                    width={32}
+                    height={32}
+                    className="h-8 w-8 object-cover"
                   />
                 </div>
-                <span className="text-sm font-medium text-gray-700">Войти</span>
+                <span className="hidden sm:inline text-sm text-gray-700">
+                  {(session.user as any)?.name || 'Профиль'}
+                </span>
               </div>
-            )}
-          </div>
+              <button
+                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                className="text-sm text-gray-900 hover:opacity-80"
+              >
+                Выйти
+              </button>
+            </>
+          ) : (
+            <Link href="/auth/signin" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                <Image
+                  src="/image.png"
+                  alt="User Avatar"
+                  width={24}
+                  height={24}
+                  className="w-6 h-6 object-contain"
+                />
+              </div>
+              <span className="text-sm font-medium text-gray-900">Войти</span>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

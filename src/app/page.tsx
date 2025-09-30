@@ -29,7 +29,7 @@ const offerings = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen" style={{background: 'linear-gradient(180deg, rgba(239, 239, 239, 1) 0%, rgba(215, 205, 175, 1) 100%)'}}>
+    <main className="min-h-screen">
       <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 pb-24 pt-20 sm:pt-24">
         <motion.section
           initial={{ opacity: 0, y: 20 }}

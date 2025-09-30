@@ -152,7 +152,7 @@ export default function VirtualDirectorPage() {
 
   return (
     <AuthGuard>
-      <main className="min-h-screen bg-[#f8f6f1]">
+      <main className="min-h-screen">
         <div className="px-6 pb-16 pt-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
             <motion.header
