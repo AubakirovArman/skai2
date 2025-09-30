@@ -18,7 +18,7 @@ interface AnalysisResult {
 }
 
 const STORAGE_KEY = 'virtual-director-analysis-history'
-const STEP_DELAY_MS = 500
+const STEP_DELAY_MS = 1000
 
 const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
@@ -94,6 +94,8 @@ export default function VirtualDirectorPage() {
   }
 
   const handleAnalyze = async () => {
+    if (!file && !content.trim()) return;
+    
     setErrorMessage(null)
     setAnalysisStep('processing')
 
@@ -108,6 +110,9 @@ export default function VirtualDirectorPage() {
       setAnalysisStep('summary')
 
       await wait(STEP_DELAY_MS)
+      
+      // После завершения анализа переходим к результатам
+      setAnalysisStep('complete')
       const analysisWithMetadata: AnalysisResult = {
         vnd: MOCK_VND,
         np: MOCK_NP,
@@ -117,7 +122,6 @@ export default function VirtualDirectorPage() {
       }
 
       setAnalysisResult(analysisWithMetadata)
-      setAnalysisStep('complete')
     } catch (error) {
       console.error('Ошибка анализа:', error)
       const message = error instanceof Error ? error.message : 'Произошла ошибка при анализе документа'
@@ -196,106 +200,177 @@ export default function VirtualDirectorPage() {
             )}
 
             <AnimatePresence mode="wait">
-              {analysisStep === 'upload' && (
-                <motion.section
+              {(analysisStep === 'upload' || analysisStep === 'processing' || analysisStep === 'vnd' || analysisStep === 'np' || analysisStep === 'summary') && (
+                <motion.div
                   key="upload"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="rounded-3xl border border-[#e3e6f1] bg-white p-10 shadow-[0_35px_90px_-70px_rgba(15,23,42,0.65)]"
+                  className="grid grid-cols-1 lg:grid-cols-2 gap-8"
                 >
-                  <h2 className="text-center text-2xl font-semibold text-slate-900">Загрузка документа для анализа</h2>
-                  <div className="mt-10 space-y-8">
-                    <div className="rounded-2xl border border-dashed border-[#d4d9eb] bg-[#f9faff] px-6 py-10 text-center transition-colors duration-200 hover:border-[#c5cae3]">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".txt,.doc,.docx"
-                        onChange={handleFileChange}
-                        className="hidden"
-                        id="file-upload"
-                      />
-                      <label htmlFor="file-upload" className="flex cursor-pointer flex-col items-center gap-4 text-slate-500">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_15px_45px_-30px_rgba(15,23,42,0.4)]">
-                          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M14 5v14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                            <path d="M7 12l7-7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M23.5 18v3.5A1.5 1.5 0 0 1 22 23h-16a1.5 1.5 0 0 1-1.5-1.5V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                          </svg>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-lg font-medium text-slate-700">Нажмите для загрузки файла</p>
-                          <p className="text-sm text-[#9aa2ba]">Поддерживаются форматы: TXT, DOC, DOCX</p>
-                        </div>
-                      </label>
-                      {file && (
-                        <div className="mt-6 rounded-2xl border border-[#dce4ff] bg-[#eef2ff] px-4 py-3 text-left text-sm text-[#445089]">
-                          <p className="font-medium">{file.name}</p>
-                          <p className="text-xs text-[#707aa6]">{(file.size / 1024).toFixed(2)} KB</p>
-                        </div>
+                  {/* Блок загрузки документа */}
+                  <motion.section
+                    className="rounded-3xl border border-[#e3e6f1] bg-white p-10 shadow-[0_35px_90px_-70px_rgba(15,23,42,0.65)]"
+                  >
+                    <h2 className="text-center text-2xl font-semibold text-slate-900">Загрузка документа для анализа</h2>
+                    <div className="mt-10 space-y-8">
+                      <div className="rounded-2xl border border-dashed border-[#d4d9eb] bg-[#f9faff] px-6 py-10 text-center transition-colors duration-200 hover:border-[#c5cae3]">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".txt,.doc,.docx"
+                          onChange={handleFileChange}
+                          className="hidden"
+                          id="file-upload"
+                        />
+                        <label htmlFor="file-upload" className="flex cursor-pointer flex-col items-center gap-4 text-slate-500">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_15px_45px_-30px_rgba(15,23,42,0.4)]">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M14 5v14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                              <path d="M7 12l7-7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M23.5 18v3.5A1.5 1.5 0 0 1 22 23h-16a1.5 1.5 0 0 1-1.5-1.5V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                            </svg>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-lg font-medium text-slate-700">Нажмите для загрузки файла</p>
+                            <p className="text-sm text-[#9aa2ba]">Поддерживаются форматы: TXT, DOC, DOCX</p>
+                          </div>
+                        </label>
+                        {file && (
+                          <div className="mt-6 rounded-2xl border border-[#dce4ff] bg-[#eef2ff] px-4 py-3 text-left text-sm text-[#445089]">
+                            <p className="font-medium">{file.name}</p>
+                            <p className="text-xs text-[#707aa6]">{(file.size / 1024).toFixed(2)} KB</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="text-center text-sm font-medium uppercase tracking-[0.4em] text-[#c3c7d7]">или</div>
+
+                      <div className="space-y-3">
+                        <label className="block text-sm font-medium text-slate-600">
+                          Введите текст документа:
+                        </label>
+                        <textarea
+                          value={content}
+                          onChange={(e) => setContent(e.target.value)}
+                          className="h-40 w-full resize-none rounded-2xl border border-[#d5d9eb] bg-[#fdfdff] px-4 py-4 text-sm text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] outline-none transition focus:border-[#c1c7e5] focus:ring-2 focus:ring-[#e4e7f6]"
+                          placeholder="Введите название темы и пояснительную записку..."
+                        />
+                      </div>
+
+                      <motion.button
+                        onClick={handleAnalyze}
+                        disabled={analysisStep !== 'upload'}
+                        className={`w-full rounded-2xl px-6 py-3 text-base font-semibold shadow-[0_20px_45px_-30px_rgba(215,161,58,0.85)] transition-all duration-200 ${
+                          analysisStep !== 'upload' 
+                            ? 'cursor-not-allowed bg-gray-300 text-gray-500' 
+                            : 'bg-[#f3d9a6] text-[#6c4d1d] hover:-translate-y-0.5 hover:bg-[#eccf97]'
+                        }`}
+                        whileHover={analysisStep === 'upload' ? { scale: 1.01 } : {}}
+                        whileTap={analysisStep === 'upload' ? { scale: 0.99 } : {}}
+                      >
+                        {analysisStep === 'upload' ? 'Начать анализ' : 'Анализ в процессе...'}
+                      </motion.button>
+                      
+                      {analysisStep === 'summary' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-4"
+                        >
+                          <motion.button
+                            onClick={() => setAnalysisStep('complete')}
+                            className="w-full rounded-2xl bg-[#d7a13a] px-6 py-3 text-base font-semibold text-white shadow-[0_20px_45px_-30px_rgba(215,161,58,0.85)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#c8932e]"
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                          >
+                            Перейти к результатам
+                          </motion.button>
+                        </motion.div>
                       )}
                     </div>
+                  </motion.section>
 
-                    <div className="text-center text-sm font-medium uppercase tracking-[0.4em] text-[#c3c7d7]">или</div>
-
-                    <div className="space-y-3">
-                      <label className="block text-sm font-medium text-slate-600">
-                        Введите текст документа:
-                      </label>
-                      <textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        className="h-40 w-full resize-none rounded-2xl border border-[#d5d9eb] bg-[#fdfdff] px-4 py-4 text-sm text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] outline-none transition focus:border-[#c1c7e5] focus:ring-2 focus:ring-[#e4e7f6]"
-                        placeholder="Введите название темы и пояснительную записку..."
-                      />
+                  {/* Блок процесса анализа документа */}
+                  <motion.section
+                    className="rounded-3xl border border-[#e3e6f1] bg-white p-10 shadow-[0_35px_90px_-70px_rgba(15,23,42,0.65)]"
+                  >
+                    <h2 className="text-center text-2xl font-semibold text-slate-900">Процесс анализа документа</h2>
+                    
+                    {/* Круговой прогресс-бар */}
+                    <div className="mt-8 flex justify-center">
+                      <div className="relative">
+                        <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+                          {/* Фоновый круг */}
+                          <circle
+                            cx="60"
+                            cy="60"
+                            r="50"
+                            stroke="#e5e7eb"
+                            strokeWidth="8"
+                            fill="none"
+                          />
+                          {/* Прогресс круг */}
+                          <circle
+                            cx="60"
+                            cy="60"
+                            r="50"
+                            stroke="#d7a13a"
+                            strokeWidth="8"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeDasharray={`${2 * Math.PI * 50}`}
+                            strokeDashoffset={`${2 * Math.PI * 50 * (1 - (
+                              analysisStep === 'upload' ? 0 :
+                              analysisStep === 'processing' ? 0.25 :
+                              analysisStep === 'vnd' ? 0.5 :
+                              analysisStep === 'np' ? 0.75 :
+                              analysisStep === 'summary' ? 1 : 0
+                            ))}`}
+                            className="transition-all duration-500 ease-in-out"
+                          />
+                        </svg>
+                        {/* Процент в центре */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-slate-700">
+                            {analysisStep === 'upload' ? '0' :
+                             analysisStep === 'processing' ? '25' :
+                             analysisStep === 'vnd' ? '50' :
+                             analysisStep === 'np' ? '75' :
+                             analysisStep === 'summary' ? '100' : '0'}%
+                          </span>
+                        </div>
+                      </div>
                     </div>
 
-                    <motion.button
-                      onClick={handleAnalyze}
-                      className="w-full rounded-2xl bg-[#f3d9a6] px-6 py-3 text-base font-semibold text-[#6c4d1d] shadow-[0_20px_45px_-30px_rgba(215,161,58,0.85)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#eccf97]"
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      Начать анализ
-                    </motion.button>
-                  </div>
-                </motion.section>
-              )}
-
-              {(analysisStep === 'processing' || analysisStep === 'vnd' || analysisStep === 'np' || analysisStep === 'summary') && (
-                <motion.section
-                  key="processing"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="rounded-3xl border border-[#e3e6f1] bg-white p-10 shadow-[0_35px_90px_-70px_rgba(15,23,42,0.65)]"
-                >
-                  <h2 className="text-center text-2xl font-semibold text-slate-900">Процесс анализа документа</h2>
-                  <div className="mt-10 space-y-7">
-                    <StepRow
-                      title="Подготовка к анализу"
-                      active={analysisStep === 'processing'}
-                      done={analysisStep !== 'processing'}
-                    />
-                    <StepRow
-                      title="Анализ ВНД (Внутренние нормативные документы)"
-                      active={analysisStep === 'vnd'}
-                      done={analysisStep === 'np' || analysisStep === 'summary'}
-                      idle={analysisStep === 'processing'}
-                    />
-                    <StepRow
-                      title="Анализ НПА (Нормативные правовые акты)"
-                      active={analysisStep === 'np'}
-                      done={analysisStep === 'summary'}
-                      idle={analysisStep === 'processing' || analysisStep === 'vnd'}
-                    />
-                    <StepRow
-                      title="Формирование итогового заключения"
-                      active={analysisStep === 'summary'}
-                      idle={analysisStep === 'processing' || analysisStep === 'vnd' || analysisStep === 'np'}
-                    />
-                  </div>
-                </motion.section>
+                    <div className="mt-8 space-y-4">
+                      <StepRow
+                        title="Подготовка к анализу"
+                        active={analysisStep === 'processing'}
+                        done={analysisStep === 'vnd' || analysisStep === 'np' || analysisStep === 'summary'}
+                        idle={analysisStep === 'upload'}
+                      />
+                      <StepRow
+                        title="Анализ ВНД (Внутренние нормативные документы)"
+                        active={analysisStep === 'vnd'}
+                        done={analysisStep === 'np' || analysisStep === 'summary'}
+                        idle={analysisStep === 'upload' || analysisStep === 'processing'}
+                      />
+                      <StepRow
+                        title="Анализ НПА (Нормативные правовые акты)"
+                        active={analysisStep === 'np'}
+                        done={analysisStep === 'summary'}
+                        idle={analysisStep === 'upload' || analysisStep === 'processing' || analysisStep === 'vnd'}
+                      />
+                      <StepRow
+                        title="Формирование итогового заключения"
+                        active={analysisStep === 'summary'}
+                        done={false}
+                        idle={analysisStep === 'upload' || analysisStep === 'processing' || analysisStep === 'vnd' || analysisStep === 'np'}
+                      />
+                    </div>
+                  </motion.section>
+                </motion.div>
               )}
 
               {analysisStep === 'complete' && analysisResult && (

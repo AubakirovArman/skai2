@@ -13,15 +13,15 @@ const navigationItems = [
     href: '/',
   },
   {
-    name: 'SK AI - виртуальный член СД',
+    name: 'Виртуальный член СД',
     href: '/virtual-director',
   },
   {
-    name: 'SK AI - ВНД Фонда',
+    name: 'ВНД Фонда',
     href: '/vnd',
   },
   {
-    name: 'SK AI - НПА Фонда',
+    name: 'НПА Фонда',
     href: '/np',
   },
 ]
@@ -31,22 +31,22 @@ export function Navigation() {
   const { data: session } = useSession()
 
   return (
-    <nav className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg border-r border-gray-200 z-50">
-      <div className="flex flex-col h-full">
-        {/* Logo section */}
-        <div className="flex items-center justify-center p-6 border-b border-gray-200">
-          <Image 
-            src="/image.png" 
-            alt="SKAI Logo" 
-            width={120} 
-            height={40} 
-            className="h-10 w-auto"
-          />
-        </div>
+    <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-gray-200 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo section */}
+          <div className="flex items-center">
+            <Image 
+              src="/image.png" 
+              alt="SKAI Logo" 
+              width={120} 
+              height={40} 
+              className="h-8 w-auto"
+            />
+          </div>
 
-        {/* Navigation items */}
-        <div className="flex-1 px-4 py-6">
-          <nav className="space-y-2">
+          {/* Navigation items */}
+          <div className="flex items-center space-x-8">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -54,50 +54,61 @@ export function Navigation() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 relative group',
+                    'relative px-3 py-2 text-sm font-medium transition-colors duration-200',
                     isActive
-                      ? 'bg-[#CEAD6E]/10 text-[#CEAD6E] border-r-2 border-[#CEAD6E]'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'text-[#CEAD6E]'
+                      : 'text-gray-600 hover:text-gray-900'
                   )}
                 >
                   <span className="relative z-10">{item.name}</span>
                   {isActive && (
-                    <motion.div
-                      className="absolute inset-0 bg-[#CEAD6E]/10 rounded-lg"
-                      layoutId="activeNavItem"
-                      initial={false}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
+                    <>
+                      <motion.div
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CEAD6E]"
+                        layoutId="activeNavItem"
+                        initial={false}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 500,
+                          damping: 30,
+                        }}
+                      />
+                      <div className="absolute top-1/2 -right-3 transform -translate-y-1/2 w-2 h-2 bg-[#CEAD6E] rounded-full" />
+                    </>
                   )}
                 </Link>
               )
             })}
-          </nav>
-        </div>
+          </div>
 
-        {/* Footer section */}
-        <div className="p-4 border-t border-gray-200">
-          {session ? (
-            <div className="space-y-3">
-              <div className="text-xs text-gray-500 text-center">
-                Добро пожаловать, {session.user?.name || 'Пользователь'}
+          {/* User section */}
+          <div className="flex items-center space-x-4">
+            {session ? (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                </div>
+                <button
+                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                >
+                  Выйти
+                </button>
               </div>
-              <button
-                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200"
-              >
-                Выйти
-              </button>
-            </div>
-          ) : (
-            <div className="text-xs text-gray-500 text-center">
-              SKAI System v1.0
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <Image 
+                    src="/image.png" 
+                    alt="User Avatar" 
+                    width={24} 
+                    height={24} 
+                    className="w-6 h-6 rounded-full"
+                  />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Войти</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

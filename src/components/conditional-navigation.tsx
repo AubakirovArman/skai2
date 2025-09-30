@@ -11,9 +11,11 @@ export function ConditionalNavigation() {
     const mainElement = document.querySelector('main');
     if (mainElement) {
       if (session) {
-        mainElement.style.marginLeft = '16rem';
+        mainElement.style.marginLeft = '0';
+        mainElement.style.paddingTop = '4rem'; // 64px для высоты навигации
       } else {
         mainElement.style.marginLeft = '0';
+        mainElement.style.paddingTop = '0';
       }
     }
   }, [session]);

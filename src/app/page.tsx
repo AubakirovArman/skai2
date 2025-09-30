@@ -29,32 +29,28 @@ const offerings = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#f8f9fb]">
+    <main className="min-h-screen" style={{background: 'linear-gradient(180deg, rgba(239, 239, 239, 1) 0%, rgba(215, 205, 175, 1) 100%)'}}>
       <div className="mx-auto flex max-w-6xl flex-col gap-16 px-4 pb-24 pt-20 sm:pt-24">
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col items-center text-center"
+          className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8"
         >
-          <div className="mb-10 flex h-28 w-28 items-center justify-center rounded-full bg-white shadow-[0_30px_70px_-40px_rgba(15,23,42,0.35)]">
-            <Image
-              src={imageMain}
-              alt="Логотип SK AI"
-              className="h-full w-full object-contain"
-              priority
-            />
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:flex-1">
+            <h1 className="text-balance text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
+              Добро <br/> пожаловать в{' '}
+              <span className="text-[#d7a13a]">SK AI</span>
+            </h1>
           </div>
-          <h1 className="text-balance text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
-            Добро пожаловать в{' '}
-            <span className="text-[#d7a13a]">SK AI</span>
-          </h1>
-          <p className="mt-6 max-w-12xl text-lg leading-relaxed text-slate-600 sm:text-xl">
-            Платформа корпоративных решений и сервисов/продуктов на базе искусственного интеллекта.
-          </p>
-          <p className="mt-3 max-w-12xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            Выберите необходимого ИИ-агента для получения профессиональных консультаций и поддержки принятия управленческих решений.
-          </p>
+          <div className="lg:flex-1 lg:max-w-lg text-center lg:text-left">
+            <p className="text-lg leading-relaxed text-slate-600 sm:text-xl">
+              Платформа корпоративных решений и сервисов/продуктов на базе искусственного интеллекта.
+            </p>
+            <p className="mt-5 text-lg leading-relaxed text-slate-600 sm:text-xl">
+              Выберите необходимого ИИ-агента для получения профессиональных консультаций и поддержки принятия управленческих решений.
+            </p>
+          </div>
         </motion.section>
 
         <motion.section

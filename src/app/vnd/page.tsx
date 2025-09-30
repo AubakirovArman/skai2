@@ -163,7 +163,7 @@ export default function VNDPage() {
 
   return (
     <AuthGuard>
-      <div className="h-screen flex flex-col">
+      <div className="h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, rgba(239, 239, 239, 1) 0%, rgba(215, 205, 175, 1) 100%)' }}>
         {/* Заголовок */}
         <motion.div
           className="flex-shrink-0 px-4 py-7 bg-white"
