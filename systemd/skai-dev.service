@@ -1,0 +1,35 @@
+[Unit]
+Description=SKAI Next.js Dev Server (port 3131)
+After=network.target
+Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+# Путь к проекту (ИЗМЕНИТЕ при необходимости)
+WorkingDirectory=/home/armanibadboy/skai2
+# Запуск dev-режима с нужным портом и хостом
+ExecStart=/usr/bin/npm run dev -- --port 3131 --hostname 0.0.0.0
+# Если хотите использовать pnpm/yarn — замените строку выше
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=development
+# Можно зафиксировать open files / память при необходимости
+# LimitNOFILE=8192
+
+# Безопасность (минимальный набор, можно расширять)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+ProtectControlGroups=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+LockPersonality=true
+RestrictRealtime=true
+WorkingDirectory=/home/armanibadboy/skai2
+
+[Install]
+WantedBy=multi-user.target

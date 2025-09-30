@@ -1,0 +1,6 @@
+/.env
+# Дополнительные файлы окружения
+.env.local
+/.env.docker
+/.next
+/node_modules
