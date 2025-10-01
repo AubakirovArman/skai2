@@ -357,8 +357,9 @@ export default function VirtualDirectorPage() {
                   <video
                     autoPlay
                     loop
-                    muted
+                    muted={true}
                     playsInline
+                    aria-hidden="true"
                     className="w-full h-full object-cover"
                   >
                     <source src="/4561.mp4" type="video/mp4" />
