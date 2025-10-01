@@ -30,6 +30,12 @@ export default function VirtualDirectorPage() {
   const [analysisStep, setAnalysisStep] = useState<'upload' | 'processing' | 'vnd' | 'np' | 'summary' | 'complete'>('upload')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const audioItogRef = useRef<HTMLAudioElement | null>(null)
+  const audioVndRef = useRef<HTMLAudioElement | null>(null)
+  const audioNpaRef = useRef<HTMLAudioElement | null>(null)
+  const audioItogPlayedRef = useRef<boolean>(false)
+  const audioVndPlayedRef = useRef<boolean>(false)
+  const audioNpaPlayedRef = useRef<boolean>(false)
 
   // Загрузка сохраненного анализа из localStorage при монтировании компонента
   useEffect(() => {
@@ -46,6 +52,10 @@ export default function VirtualDirectorPage() {
           timestamp: timestampValue,
         })
         setAnalysisStep('complete')
+        // Отмечаем что аудио уже было воспроизведено (при загрузке из localStorage не воспроизводим)
+        audioItogPlayedRef.current = true
+        audioVndPlayedRef.current = true
+        audioNpaPlayedRef.current = true
       } catch (error) {
         console.error('Ошибка при загрузке сохраненного анализа:', error)
       }
@@ -58,6 +68,136 @@ export default function VirtualDirectorPage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(analysisResult))
     }
   }, [analysisResult, analysisStep])
+
+  // Воспроизведение аудио "Итоговое заключение" (только один раз)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (audioItogRef.current) {
+          audioItogRef.current.pause()
+          audioItogRef.current.currentTime = 0
+        }
+        if (audioVndRef.current) {
+          audioVndRef.current.pause()
+          audioVndRef.current.currentTime = 0
+        }
+        if (audioNpaRef.current) {
+          audioNpaRef.current.pause()
+          audioNpaRef.current.currentTime = 0
+        }
+      }
+    }
+
+    const handleBeforeUnload = () => {
+      if (audioItogRef.current) {
+        audioItogRef.current.pause()
+        audioItogRef.current.currentTime = 0
+      }
+      if (audioVndRef.current) {
+        audioVndRef.current.pause()
+        audioVndRef.current.currentTime = 0
+      }
+      if (audioNpaRef.current) {
+        audioNpaRef.current.pause()
+        audioNpaRef.current.currentTime = 0
+      }
+    }
+
+    // Воспроизводим аудио только если анализ завершен, активна вкладка summary и аудио еще не воспроизводилось
+    if (analysisStep === 'complete' && activeTab === 'summary' && !audioItogPlayedRef.current) {
+      // Создаем аудио элемент если еще не создан
+      if (!audioItogRef.current) {
+        audioItogRef.current = new Audio('/itog.wav')
+      }
+
+      // Воспроизводим через 1 секунду
+      timeoutId = setTimeout(() => {
+        audioItogRef.current?.play().catch((error) => {
+          console.error('Ошибка воспроизведения аудио:', error)
+        })
+        // Отмечаем что аудио было воспроизведено
+        audioItogPlayedRef.current = true
+      }, 1000)
+
+      // Добавляем слушатели событий
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+      window.addEventListener('beforeunload', handleBeforeUnload)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [analysisStep, activeTab])
+
+  // Воспроизведение аудио "Анализ ВНД" (только один раз)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    if (analysisStep === 'complete' && activeTab === 'vnd' && !audioVndPlayedRef.current) {
+      if (!audioVndRef.current) {
+        audioVndRef.current = new Audio('/VND.wav')
+      }
+
+      timeoutId = setTimeout(() => {
+        audioVndRef.current?.play().catch((error) => {
+          console.error('Ошибка воспроизведения VND аудио:', error)
+        })
+        audioVndPlayedRef.current = true
+      }, 1000)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [analysisStep, activeTab])
+
+  // Воспроизведение аудио "Анализ НПА" (только один раз)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    if (analysisStep === 'complete' && activeTab === 'np' && !audioNpaPlayedRef.current) {
+      if (!audioNpaRef.current) {
+        audioNpaRef.current = new Audio('/npa.wav')
+      }
+
+      timeoutId = setTimeout(() => {
+        audioNpaRef.current?.play().catch((error) => {
+          console.error('Ошибка воспроизведения НПА аудио:', error)
+        })
+        audioNpaPlayedRef.current = true
+      }, 1000)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [analysisStep, activeTab])
+
+  // Остановка всех аудио при смене вкладки
+  useEffect(() => {
+    if (activeTab !== 'summary' && audioItogRef.current) {
+      audioItogRef.current.pause()
+      audioItogRef.current.currentTime = 0
+    }
+    if (activeTab !== 'vnd' && audioVndRef.current) {
+      audioVndRef.current.pause()
+      audioVndRef.current.currentTime = 0
+    }
+    if (activeTab !== 'np' && audioNpaRef.current) {
+      audioNpaRef.current.pause()
+      audioNpaRef.current.currentTime = 0
+    }
+  }, [activeTab])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -138,6 +278,26 @@ export default function VirtualDirectorPage() {
     setErrorMessage(null)
     setActiveTab('summary')
     localStorage.removeItem(STORAGE_KEY)
+    
+    // Останавливаем и сбрасываем все аудио
+    if (audioItogRef.current) {
+      audioItogRef.current.pause()
+      audioItogRef.current.currentTime = 0
+    }
+    if (audioVndRef.current) {
+      audioVndRef.current.pause()
+      audioVndRef.current.currentTime = 0
+    }
+    if (audioNpaRef.current) {
+      audioNpaRef.current.pause()
+      audioNpaRef.current.currentTime = 0
+    }
+    
+    // Сбрасываем флаги воспроизведения аудио для нового анализа
+    audioItogPlayedRef.current = false
+    audioVndPlayedRef.current = false
+    audioNpaPlayedRef.current = false
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -148,6 +308,25 @@ export default function VirtualDirectorPage() {
     setAnalysisStep('upload')
     setActiveTab('summary')
     localStorage.removeItem(STORAGE_KEY)
+    
+    // Останавливаем и сбрасываем все аудио
+    if (audioItogRef.current) {
+      audioItogRef.current.pause()
+      audioItogRef.current.currentTime = 0
+    }
+    if (audioVndRef.current) {
+      audioVndRef.current.pause()
+      audioVndRef.current.currentTime = 0
+    }
+    if (audioNpaRef.current) {
+      audioNpaRef.current.pause()
+      audioNpaRef.current.currentTime = 0
+    }
+    
+    // Сбрасываем флаги воспроизведения
+    audioItogPlayedRef.current = false
+    audioVndPlayedRef.current = false
+    audioNpaPlayedRef.current = false
   }
 
   return (
@@ -159,13 +338,33 @@ export default function VirtualDirectorPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="flex w-full flex-wrap items-center gap-6 rounded-2xl border border-[#e4dfd0] bg-white px-6 py-5 shadow-sm"
+              className="flex w-full flex-wrap items-center justify-between gap-6 rounded-2xl border border-[#e4dfd0] bg-white px-6 py-5 shadow-sm"
             >
               <div className="flex min-w-[240px] flex-1 flex-col gap-1 text-left">
                 <h1 className="text-2xl font-semibold leading-tight text-[#2a2a33] sm:text-[28px]">
                   Виртуальный член Совета Директоров
                 </h1>
               </div>
+              
+              {/* Круглое видео - показывается только при результатах */}
+              {analysisStep === 'complete' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="relative w-32 h-32 rounded-full border-2 border-slate-300 overflow-hidden"
+                >
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src="/456.mp4" type="video/mp4" />
+                  </video>
+                </motion.div>
+              )}
             </motion.header>
 
             {errorMessage && (
@@ -330,15 +529,19 @@ export default function VirtualDirectorPage() {
                             className="transition-all duration-500 ease-in-out"
                           />
                         </svg>
-                        {/* Процент в центре */}
+                        {/* Видео в центре */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-2xl font-bold text-slate-700">
-                            {analysisStep === 'upload' ? '0' :
-                             analysisStep === 'processing' ? '25' :
-                             analysisStep === 'vnd' ? '50' :
-                             analysisStep === 'np' ? '75' :
-                             analysisStep === 'summary' ? '100' : '0'}%
-                          </span>
+                          <div className="w-[127px] h-[127px] rounded-full overflow-hidden">
+                            <video
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              className="w-full h-full object-cover"
+                            >
+                              <source src="/1324.mp4" type="video/mp4" />
+                            </video>
+                          </div>
                         </div>
                       </div>
                     </div>
