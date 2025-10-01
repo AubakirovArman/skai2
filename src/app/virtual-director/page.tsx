@@ -540,7 +540,7 @@ export default function VirtualDirectorPage() {
                               playsInline
                               className="w-full h-full object-cover"
                             >
-                              <source src="/1324.mp4" type="video/mp4" />
+                              <source src="/789.mp4.mp4" type="video/mp4" />
                             </video>
                           </div>
                         </div>
