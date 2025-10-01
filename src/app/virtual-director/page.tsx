@@ -362,7 +362,7 @@ export default function VirtualDirectorPage() {
                     aria-hidden="true"
                     className="w-full h-full object-cover"
                   >
-                    <source src="/4561.mp4" type="video/mp4" />
+                    <source src="/IMG_3363.MOV" type="video/mp4" />
                   </video>
                 </motion.div>
               )}
