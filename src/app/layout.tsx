@@ -21,8 +21,8 @@ export default function RootLayout({
             <div className="relative mx-auto w-[min(1440px,92vw)]">
               <div className="relative rounded-[36px] bg-white ring-1 ring-black/5 shadow-[0_60px_120px_-60px_rgba(15,23,42,0.35)]">
                 {/* УШИ */}
-                <div className="pointer-events-none absolute -top-12 left-0 h-24 w-80 rounded-tl-lg rounded-tr-[100px] bg-white" />
-                <div className="pointer-events-none absolute -top-12 right-0 h-24 w-80 rounded-tl-[100px] rounded-tr-lg bg-white" />
+                <div className="pointer-events-none absolute -top-8 sm:-top-10 lg:-top-12 left-0 h-16 sm:h-20 lg:h-24 w-56 sm:w-64 md:w-52 lg:w-80 rounded-tl-lg rounded-tr-[100px] bg-white" />
+                <div className="pointer-events-none absolute -top-8 sm:-top-10 lg:-top-12 right-0 h-16 sm:h-20 lg:h-24 w-56 sm:w-64 md:w-52 lg:w-80 rounded-tl-[100px] rounded-tr-lg bg-white" />
 
               {/* ===== ДЕКОРАТИВНЫЕ ЛИНИИ НА ФОНЕ ===== */}
                 <div className="pointer-events-none absolute inset-0 z-[5] rounded-[36px] overflow-hidden">
@@ -39,7 +39,7 @@ export default function RootLayout({
                 </div>
                 {/* РЯД НАВИГАЦИИ: СИДИТ НА КРОМКЕ МЕЖДУ «УШАМИ» */}
                 <div className="absolute inset-x-0 -top-10 z-20 px-8">
-                  <div className="mx-auto flex h-10 max-w-[min(1200px,92vw)] items-center justify-between">
+                  <div className="mx-auto flex h-10 max-w-[min(1200px,92vw)]  items-center justify-between">
                     <ConditionalNavigation />
                   </div>
                 </div>

@@ -136,6 +136,53 @@ export default function VirtualDirectorPage() {
     }
   }, [analysisStep, activeTab])
 
+  // Воспроизведение аудио "Анализ ВНД" (только один раз)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    if (analysisStep === 'complete' && activeTab === 'vnd' && !audioVndPlayedRef.current) {
+      if (!audioVndRef.current) {
+        audioVndRef.current = new Audio('/VND.wav')
+      }
+
+      timeoutId = setTimeout(() => {
+        audioVndRef.current?.play().catch((error) => {
+          console.error('Ошибка воспроизведения VND аудио:', error)
+        })
+        audioVndPlayedRef.current = true
+      }, 1000)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [analysisStep, activeTab])
+
+  // Воспроизведение аудио "Анализ НПА" (только один раз)
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    if (analysisStep === 'complete' && activeTab === 'np' && !audioNpaPlayedRef.current) {
+      if (!audioNpaRef.current) {
+        audioNpaRef.current = new Audio('/npa.wav')
+      }
+
+      timeoutId = setTimeout(() => {
+        audioNpaRef.current?.play().catch((error) => {
+          console.error('Ошибка воспроизведения НПА аудио:', error)
+        })
+        audioNpaPlayedRef.current = true
+      }, 1000)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [analysisStep, activeTab])
 
   // Остановка всех аудио и видео при смене вкладки
   useEffect(() => {
@@ -152,8 +199,8 @@ export default function VirtualDirectorPage() {
       audioNpaRef.current.currentTime = 0
     }
     
-    // Остановка видео при переходе на вкладки ВНД или НПА (видео не возобновляется)
-    if (activeTab !== 'summary' && videoHeaderRef.current) {
+    // Остановка видео при ВОЗВРАТЕ на вкладку "Итоговое заключение"
+    if (activeTab === 'summary' && videoHeaderRef.current) {
       videoHeaderRef.current.pause()
     }
   }, [activeTab])

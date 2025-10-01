@@ -19,38 +19,42 @@ export function Navigation() {
   const isActive = (href: string) => pathname === href
 
   return (
-    // без fixed/bg/border — позиционирование делает layout
     <nav className="w-full">
-      <div className="mx-auto flex h-10 w-full max-w-[min(1200px,92vw)] items-center justify-between px-0">
-        {/* ЛОГО слева */}
+      {/* height & padding get a touch smaller on mobile */}
+      <div className="mx-auto flex h-10 sm:h-11 md:h-12 w-full max-w-[min(1200px,92vw)] items-center justify-between px-0">
+        {/* ЛОГО (чуть меньше на мобиле) */}
         <div className="flex items-center">
           <Image
             src="/image.png"
             alt="SKAI Logo"
             width={124}
             height={32}
-            className="object-contain"
+            className="w-20 h-auto sm:w-24 md:w-28 max-[834px]:w-24 lg:h-24 md:h-10 object-contain"
             priority
           />
         </div>
 
-        <div className="flex items-center align-center space-x-8">
-          <nav className="flex items-center gap-8">
+        {/* ЛИНЕЙНАЯ НАВИГАЦИЯ — всегда видна; размеры и отступы ужимаются на узких экранах */}
+        <div className="flex items-center">
+          <nav className="flex items-center gap-3 sm:gap-4 md:gap-3 lg:gap-8 max-[834px]:gap-2.5">
             {items.map((it) => {
-              const active = pathname === it.href
+              const active = isActive(it.href)
               return (
                 <Link
                   key={it.href}
                   href={it.href}
+                  aria-current={active ? 'page' : undefined}
                   className={cn(
-                    "relative text-sm transition-colors",
-                    active ? "text-black font-semibold" : "text-gray-500 hover:text-gray-800"
+                    // shrink font on mobile, normal on desktop
+                    'relative text-[12px] sm:text-[13px] md:text-[9px] lg:text-sm transition-colors',
+                    active
+                      ? 'text-black font-semibold'
+                      : 'text-gray-500 hover:text-gray-800'
                   )}
                 >
                   {it.name}
-                  {/* точка вплотную к активному пункту */}
                   {active && (
-                    <span className="ml-2 inline-block h-1.5 w-1.5 align-middle rounded-full bg-black" />
+                    <span className="ml-1.5 md:ml-2 inline-block h-1 w-1 md:h-1.5 md:w-1.5 align-middle rounded-full bg-black max-[834px]:hidden" />
                   )}
                 </Link>
               )
@@ -58,25 +62,25 @@ export function Navigation() {
           </nav>
         </div>
 
-        {/* ПРАВЫЙ БЛОК — ЛОГИКА КАК БЫЛА (аватар/Войти/Выйти) */}
-        <div className="flex items-center space-x-3">
+        {/* Правый блок — всегда виден, но компактный на узких экранах */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
           {session ? (
             <>
               <div className="flex items-center space-x-2">
-                <span className="hidden sm:inline text-sm text-gray-700">
+                <span className="hidden lg:inline text-xs sm:text-sm text-gray-700">
                   {(session.user as any)?.name || 'Профиль'}
                 </span>
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                className="text-sm text-gray-900 hover:opacity-80"
+                className="text-xs sm:text-sm max-[834px]:text-[12px] text-gray-900 hover:opacity-80"
               >
                 Выйти
               </button>
             </>
           ) : (
             <Link href="/auth/signin" className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-900">Войти</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900">Войти</span>
             </Link>
           )}
         </div>
