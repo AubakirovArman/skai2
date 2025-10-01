@@ -117,9 +117,6 @@ export default function SignIn() {
           </div>
 
           <div className="text-center text-sm text-gray-600">
-            <p>Тестовые данные:</p>
-            <p>Логин: <span className="font-mono bg-gray-100 px-1 rounded">admin</span></p>
-            <p>Пароль: <span className="font-mono bg-gray-100 px-1 rounded">password</span></p>
           </div>
         </form>
       </motion.div>

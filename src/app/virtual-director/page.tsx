@@ -352,7 +352,7 @@ export default function VirtualDirectorPage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
-                  className="relative w-32 h-32 rounded-full border-2 border-slate-300 overflow-hidden"
+                  className="relative w-100 h-48 rounded-full border-2 border-slate-300 overflow-hidden"
                 >
                   <video
                     autoPlay
@@ -361,7 +361,7 @@ export default function VirtualDirectorPage() {
                     playsInline
                     className="w-full h-full object-cover"
                   >
-                    <source src="/1324.mp4" type="video/mp4" />
+                    <source src="/4561.mp4" type="video/mp4" />
                   </video>
                 </motion.div>
               )}

@@ -63,15 +63,6 @@ export function Navigation() {
           {session ? (
             <>
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                  <Image
-                    src={(session.user as any)?.image || '/image.png'}
-                    alt={(session.user as any)?.name || 'User Avatar'}
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 object-cover"
-                  />
-                </div>
                 <span className="hidden sm:inline text-sm text-gray-700">
                   {(session.user as any)?.name || 'Профиль'}
                 </span>
@@ -85,15 +76,6 @@ export function Navigation() {
             </>
           ) : (
             <Link href="/auth/signin" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                <Image
-                  src="/image.png"
-                  alt="User Avatar"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6 object-contain"
-                />
-              </div>
               <span className="text-sm font-medium text-gray-900">Войти</span>
             </Link>
           )}
