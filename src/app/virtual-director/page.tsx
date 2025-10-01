@@ -33,6 +33,7 @@ export default function VirtualDirectorPage() {
   const audioItogRef = useRef<HTMLAudioElement | null>(null)
   const audioVndRef = useRef<HTMLAudioElement | null>(null)
   const audioNpaRef = useRef<HTMLAudioElement | null>(null)
+  const videoHeaderRef = useRef<HTMLVideoElement | null>(null)
   const audioItogPlayedRef = useRef<boolean>(false)
   const audioVndPlayedRef = useRef<boolean>(false)
   const audioNpaPlayedRef = useRef<boolean>(false)
@@ -135,55 +136,8 @@ export default function VirtualDirectorPage() {
     }
   }, [analysisStep, activeTab])
 
-  // Воспроизведение аудио "Анализ ВНД" (только один раз)
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null
 
-    if (analysisStep === 'complete' && activeTab === 'vnd' && !audioVndPlayedRef.current) {
-      if (!audioVndRef.current) {
-        audioVndRef.current = new Audio('/VND.wav')
-      }
-
-      timeoutId = setTimeout(() => {
-        audioVndRef.current?.play().catch((error) => {
-          console.error('Ошибка воспроизведения VND аудио:', error)
-        })
-        audioVndPlayedRef.current = true
-      }, 1000)
-    }
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [analysisStep, activeTab])
-
-  // Воспроизведение аудио "Анализ НПА" (только один раз)
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null
-
-    if (analysisStep === 'complete' && activeTab === 'np' && !audioNpaPlayedRef.current) {
-      if (!audioNpaRef.current) {
-        audioNpaRef.current = new Audio('/npa.wav')
-      }
-
-      timeoutId = setTimeout(() => {
-        audioNpaRef.current?.play().catch((error) => {
-          console.error('Ошибка воспроизведения НПА аудио:', error)
-        })
-        audioNpaPlayedRef.current = true
-      }, 1000)
-    }
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [analysisStep, activeTab])
-
-  // Остановка всех аудио при смене вкладки
+  // Остановка всех аудио и видео при смене вкладки
   useEffect(() => {
     if (activeTab !== 'summary' && audioItogRef.current) {
       audioItogRef.current.pause()
@@ -196,6 +150,11 @@ export default function VirtualDirectorPage() {
     if (activeTab !== 'np' && audioNpaRef.current) {
       audioNpaRef.current.pause()
       audioNpaRef.current.currentTime = 0
+    }
+    
+    // Остановка видео при переходе на вкладки ВНД или НПА (видео не возобновляется)
+    if (activeTab !== 'summary' && videoHeaderRef.current) {
+      videoHeaderRef.current.pause()
     }
   }, [activeTab])
 
@@ -338,10 +297,10 @@ export default function VirtualDirectorPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="flex w-full flex-wrap items-center justify-between gap-6 rounded-2xl border border-[#e4dfd0] bg-white px-6 py-5 shadow-sm"
+              className="flex w-full items-center justify-between gap-4 rounded-2xl border border-[#e4dfd0] bg-white px-6 py-5 shadow-sm"
             >
-              <div className="flex min-w-[240px] flex-1 flex-col gap-1 text-left">
-                <h1 className="text-2xl font-semibold leading-tight text-[#2a2a33] sm:text-[28px]">
+              <div className="flex flex-1 flex-col gap-1 text-left min-w-0">
+                <h1 className="text-xl font-semibold leading-tight text-[#2a2a33] sm:text-2xl lg:text-[28px]">
                   Виртуальный член Совета Директоров
                 </h1>
               </div>
@@ -352,9 +311,10 @@ export default function VirtualDirectorPage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
-                  className="relative w-100 h-48 rounded-full border-2 border-slate-300 overflow-hidden"
+                  className="relative w-80 h-32 sm:w-80 sm:h-40 lg:w-80 lg:h-48 rounded-full border-2 border-slate-300 overflow-hidden flex-shrink-0"
                 >
                   <video
+                    ref={videoHeaderRef}
                     autoPlay
                     loop
                     muted={true}
