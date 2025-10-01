@@ -361,7 +361,7 @@ export default function VirtualDirectorPage() {
                     playsInline
                     className="w-full h-full object-cover"
                   >
-                    <source src="/456.mp4" type="video/mp4" />
+                    <source src="/1324.mp4" type="video/mp4" />
                   </video>
                 </motion.div>
               )}
@@ -497,29 +497,29 @@ export default function VirtualDirectorPage() {
                     <h2 className="text-center text-2xl font-semibold text-slate-900">Процесс анализа документа</h2>
                     
                     {/* Круговой прогресс-бар */}
-                    <div className="mt-8 flex justify-center">
+                    <div className="mt-2 flex justify-center">
                       <div className="relative">
-                        <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+                        <svg className="w-64 h-64 transform -rotate-90" viewBox="0 0 120 120">
                           {/* Фоновый круг */}
                           <circle
                             cx="60"
                             cy="60"
-                            r="50"
+                            r="44"
                             stroke="#e5e7eb"
-                            strokeWidth="8"
+                            strokeWidth="6"
                             fill="none"
                           />
                           {/* Прогресс круг */}
                           <circle
                             cx="60"
                             cy="60"
-                            r="50"
+                            r="44"
                             stroke="#d7a13a"
-                            strokeWidth="8"
+                            strokeWidth="6"
                             fill="none"
                             strokeLinecap="round"
-                            strokeDasharray={`${2 * Math.PI * 50}`}
-                            strokeDashoffset={`${2 * Math.PI * 50 * (1 - (
+                            strokeDasharray={`${2 * Math.PI * 54}`}
+                            strokeDashoffset={`${2 * Math.PI * 54 * (1 - (
                               analysisStep === 'upload' ? 0 :
                               analysisStep === 'processing' ? 0.25 :
                               analysisStep === 'vnd' ? 0.5 :
@@ -531,7 +531,7 @@ export default function VirtualDirectorPage() {
                         </svg>
                         {/* Видео в центре */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-[127px] h-[127px] rounded-full overflow-hidden">
+                          <div className="w-[180px] h-[180px] rounded-full overflow-hidden">
                             <video
                               autoPlay
                               loop
@@ -546,7 +546,7 @@ export default function VirtualDirectorPage() {
                       </div>
                     </div>
 
-                    <div className="mt-8 space-y-4">
+                    <div className="mt-2 space-y-4">
                       <StepRow
                         title="Подготовка к анализу"
                         active={analysisStep === 'processing'}

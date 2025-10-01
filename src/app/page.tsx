@@ -43,26 +43,26 @@ export default function Home() {
             </h1>
           </div>
 
-          {/* Центр: Изображение девушки */}
-          <div className="flex items-center justify-center">
-            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[407px]">
-              <Image 
-                src="/1234.png"
-                alt="SK AI"
-                width={407}
-                height={359}
-                className="w-full h-auto object-cover rounded-lg"
-                priority
-              />
-            </div>
-          </div>
+           {/* Центр: Изображение девушки */}
+           <div className="flex items-center justify-center">
+             <div className="relative w-full max-w-[224px] sm:max-w-[256px] md:max-w-[288px] lg:max-w-[326px]">
+               <Image 
+                 src="/1234.png"
+                 alt="SK AI"
+                 width={407}
+                 height={359}
+                 className="w-full h-auto object-cover rounded-lg"
+                 priority
+               />
+             </div>
+           </div>
 
           {/* Правая часть: Описание */}
           <div className="flex flex-col gap-4 text-center lg:text-left sm:gap-5">
-            <p className="text-base leading-relaxed text-slate-600 sm:text-lg md:text-xl">
+            <p className="text-xs leading-relaxed text-slate-600 sm:text-sm md:text-base">
               Платформа корпоративных решений и сервисов/продуктов на базе искусственного интеллекта.
             </p>
-            <p className="text-base leading-relaxed text-slate-600 sm:text-lg md:text-xl">
+            <p className="text-xs leading-relaxed text-slate-600 sm:text-sm md:text-base">
               Выберите необходимого ИИ-агента для получения профессиональных консультаций и поддержки принятия управленческих решений.
             </p>
           </div>
